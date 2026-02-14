@@ -1,2 +1,5 @@
 pygame
 PyQt5
+moderngl
+numpy
+vulkan
