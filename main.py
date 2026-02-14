@@ -79,6 +79,7 @@ class PygameWidget(QWidget):
         if isinstance(self.renderer.backend, PygameBackend):
             # Pygame renders to its own window, so we don't need to paint in Qt.
             # However, if we want to embed, we'd need to use a different approach.
+            # For now, we'll just skip painting.
             pass
         else:
             # For OpenGL/Vulkan, the backend draws directly to the Pygame window,
@@ -99,11 +100,13 @@ class PygameWidget(QWidget):
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
-        self.setWindowTitle("NeoPyxel Engine - v0.2")
+        self.setWindowTitle("NeoPyxel Engine - v0.3")
         self.setGeometry(100, 100, 1280, 720)
 
         pygame.init()
-
+        
+        self.engine_widget = PygameWidget(backend_type="opengl")
+        self.engine_widget.initialize_engine()
         central = QWidget()
         self.setCentralWidget(central)
         layout = QVBoxLayout(central)
@@ -113,12 +116,9 @@ class MainWindow(QMainWindow):
         label = QLabel("No Project.\nUse menu to control.")
         label.setAlignment(Qt.AlignCenter)
         layout.addWidget(label)
+        layout.addWidget(self.engine_widget)
 
         self.create_menu_bar()
-
-        # Initialize engine with desired backend (default opengl)
-        self.engine_widget = PygameWidget(backend_type="opengl")
-        self.engine_widget.initialize_engine()
 
     def create_menu_bar(self):
         menubar = self.menuBar()
