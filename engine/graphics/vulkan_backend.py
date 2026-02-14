@@ -2,11 +2,10 @@ from .backend import GraphicsBackend
 
 class VulkanBackend(GraphicsBackend):
     def __init__(self):
-        # Would initialize Vulkan instance, device, swapchain, etc.
-        pass
+        raise NotImplementedError("Vulkan backend is a stub. Install Vulkan SDK and python-vulkan to use.")
 
     def initialize(self, internal_res, screen_res, title="NeoPyxel"):
-        print("Vulkan backend not fully implemented. Falling back to OpenGL.")
+        print("Vulkan backend not fully implemented. return OpenGLBackend.")
         # Fallback or raise error
         raise NotImplementedError("Vulkan backend is a stub.")
 
