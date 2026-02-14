@@ -3,3 +3,4 @@ PyQt5
 moderngl
 numpy
 vulkan
+emscripten
