@@ -4,7 +4,6 @@ class NeoPlugin {
     }
 
     onUpdate(entityId) {
-        // Simulation Logic
         console.log(`Entity ${entityId} is updating via JavaScript Plugin.`);
     }
 }
