@@ -1,0 +1,27 @@
+<!-- index.html -->
+<!DOCTYPE html>
+<html>
+<head>
+  <title>NeoPyxel Web</title>
+  <script src="neopyxel.js"></script>
+  <script src="https://cdn.jsdelivr.net/pyodide/v0.24.1/full/pyodide.js"></script>
+</head>
+<body>
+  <canvas id="game-canvas" width="1280" height="720"></canvas>
+  <script type="text/typescript">
+    // TypeScript code here
+    const canvas = document.getElementById('game-canvas');
+    const engine = new NeoPyxelEngine(canvas);
+    
+    engine.createEntity(100, 100, [255, 100, 100]);
+    
+    function gameLoop() {
+      engine.update(1/60);
+      engine.render();
+      requestAnimationFrame(gameLoop);
+    }
+    
+    gameLoop();
+  </script>
+</body>
+</html>
