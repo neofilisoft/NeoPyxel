@@ -4,3 +4,4 @@ moderngl
 numpy
 vulkan
 emscripten
+lupa
