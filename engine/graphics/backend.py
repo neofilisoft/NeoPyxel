@@ -1,5 +1,6 @@
+# engine/graphics/backend.py
 from abc import ABC, abstractmethod
-import pygame  # only for color/rrect types, but backend should be independent
+import pygame  # still used for rect and color types
 
 class GraphicsBackend(ABC):
     """Abstract base class for all graphics backends."""
@@ -21,7 +22,7 @@ class GraphicsBackend(ABC):
 
     @abstractmethod
     def draw_surface(self, surface, rect):
-        """Draw a pygame Surface (for sprites) – only if backend supports it."""
+        """Draw a pygame Surface (for sprites) at the given rect."""
         pass
 
     @abstractmethod
@@ -41,7 +42,7 @@ class GraphicsBackend(ABC):
 
     @abstractmethod
     def get_internal_surface(self):
-        """Return the internal surface (if applicable) for UI drawing."""
+        """Return the internal surface (if applicable) for UI drawing or embedding."""
         pass
 
     @abstractmethod
