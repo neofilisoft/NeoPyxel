@@ -7,15 +7,4 @@ NeoPyxel - Game Editor Tool
 - Script Bridge
   
 ### Pyinstaller Build 
-```pyinstaller --noconfirm --onefile --windowed --name "NeoPyxel" `
---add-data "editor/static/bridge.js;editor/static" `
---add-data "editor/static;editor/static" `
---add-data "web;web" `
---add-data "plugins;plugins" `
---hidden-import "PyQt5.sip" `
---hidden-import "moderngl" `
---hidden-import "pygame" `
---hidden-import "numpy" `
---hidden-import "lupa" `
---additional-hooks-dir . `
-main.py```
+```pyinstaller --noconfirm --onedir --windowed --name "NeoPyxel" --contents-directory "Resource" --add-data "editor/static/bridge.js;editor/static" --add-data "editor/static;editor/static" --add-data "web;web" --add-data "plugins;plugins" --hidden-import "PyQt5.sip" --hidden-import "moderngl" --hidden-import "pygame" --hidden-import "numpy" --hidden-import "lupa" --additional-hooks-dir . main.py```
