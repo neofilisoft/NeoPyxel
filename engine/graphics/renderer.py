@@ -7,20 +7,10 @@ class Renderer:
 
     def render(self, entities, lighting=None, ui=None, clock=None):
         self.backend.begin_frame()
-
-        # Draw entities
         for entity in entities:
             self.backend.draw_surface(entity.image, entity.rect)
-
-        # Apply lighting if any
         if lighting:
             self.backend.apply_lighting(lighting.get_mask())
-
-        # Draw UI if provided
         if ui and clock:
-            ui.draw_status(self.backend, clock, {
-                "FPS": int(clock.get_fps()),
-                "Entities": len(entities)
-            })
-
+            ui.draw_status(self.backend, clock, {"Entities": len(entities)})
         self.backend.end_frame()
