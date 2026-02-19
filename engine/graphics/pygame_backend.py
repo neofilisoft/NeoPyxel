@@ -1,4 +1,5 @@
 import pygame
+import os
 from .backend import GraphicsBackend
 
 class PygameBackend(GraphicsBackend):
@@ -8,14 +9,22 @@ class PygameBackend(GraphicsBackend):
         self.internal_surface = None
         self.scaled_surface = None
         self.window = None
+        self.embedded = False
 
     def initialize(self, internal_res, screen_res, title="NeoPyxel"):
         self.internal_res = internal_res
         self.screen_res = screen_res
         self.internal_surface = pygame.Surface(internal_res)
-        self.scaled_surface = pygame.Surface(screen_res)
-        self.window = pygame.display.set_mode(screen_res, pygame.DOUBLEBUF | pygame.OPENGL)  # optional OpenGL flag
-        pygame.display.set_caption(title)
+        self.embedded = "SDL_WINDOWID" in os.environ
+
+        if self.embedded:
+            # Embedded editor mode: render offscreen only and let Qt paint it.
+            self.scaled_surface = None
+            self.window = None
+        else:
+            self.scaled_surface = pygame.Surface(screen_res)
+            self.window = pygame.display.set_mode(screen_res, pygame.DOUBLEBUF)
+            pygame.display.set_caption(title)
         return self
 
     def begin_frame(self):
@@ -35,6 +44,8 @@ class PygameBackend(GraphicsBackend):
         self.internal_surface.blit(text_surf, position)
 
     def end_frame(self):
+        if self.embedded or not self.window:
+            return
         pygame.transform.scale(self.internal_surface, self.screen_res, self.scaled_surface)
         self.window.blit(self.scaled_surface, (0, 0))
         pygame.display.flip()
@@ -43,4 +54,4 @@ class PygameBackend(GraphicsBackend):
         return self.internal_surface
 
     def cleanup(self):
-        pygame.quit()
+        pass
