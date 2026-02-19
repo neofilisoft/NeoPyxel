@@ -1,4 +1,4 @@
-# NeoPyxel Engine
+# NeoPyxel Studio
 NeoPyxel - Game Editor Tool
 
 =======FEATURE=======
