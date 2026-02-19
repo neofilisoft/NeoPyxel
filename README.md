@@ -1,7 +1,7 @@
 # NeoPyxel Studio
 NeoPyxel - Game Editor Tool
 
-=======FEATURE=======
+======= FEATURE =======
 - Multi-Backend
 - Dynamic Lighting
 - Script Bridge
