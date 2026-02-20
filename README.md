@@ -8,4 +8,6 @@ NeoPyxel - Game Editor Tool
 - Plugin System
   
 ### Pyinstaller Build 
-```pyinstaller --noconfirm --onedir --windowed --name "NeoPyxel" --contents-directory "Resource" --add-data "editor/static/bridge.js;editor/static" --add-data "editor/static;editor/static" --add-data "web;web" --add-data "plugins;plugins" --hidden-import "PyQt5.sip" --hidden-import "moderngl" --hidden-import "pygame" --hidden-import "numpy" --hidden-import "lupa" --additional-hooks-dir . main.py```
+```pyinstaller --noconfirm --onedir --windowed --name "NeoPyxel" --contents-directory "Resource" --add-data "assets;assets" --add-data "editor/static/bridge.js;editor/static" --add-data "editor/static;editor/static" --add-data "web;web" --add-data "plugins;plugins" --hidden-import "PyQt5.sip" --hidden-import "moderngl" --hidden-import "pygame" --hidden-import "numpy" --hidden-import "lupa" --additional-hooks-dir . main.py```
+```Copy-Item -Recurse -Force .\assets .\dist\NeoPyxel\Assets```
+```Copy-Item -Recurse -Force .\plugins .\dist\NeoPyxel\Plugins```
