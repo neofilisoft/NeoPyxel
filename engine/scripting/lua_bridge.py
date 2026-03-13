@@ -1,8 +1,6 @@
 # engine/scripting/lua_bridge.py
 import os
 
-from lupa import LuaRuntime
-
 
 class LuaBridge:
     def __init__(self):
@@ -14,7 +12,7 @@ class LuaBridge:
 
     def _init_runtime(self):
         try:
-            from lupa import LuaRuntime  # Lazy import to avoid hard crash when packaged without lupa libs
+            from lupa import LuaRuntime  # Delay import so app can start even without packaged lupa binaries.
 
             self.lua = LuaRuntime(unpack_returned_tuples=True)
             self.available = True
@@ -57,20 +55,29 @@ class LuaBridge:
     def load_script(self, filepath):
         with open(filepath, "r", encoding="utf-8") as file:
             code = file.read()
+
         name = os.path.basename(filepath)
         self.scripts[name] = code
+
         if not self.available:
             return False
+
         self.lua.execute(code)
         return True
 
     def call_function(self, func_name, *args):
         if not self.available:
             return None
-        func = self.lua.globals().get(func_name)
-        if func:
-            return func(*args)
-        return None
+
+        globals_table = self.lua.globals()
+        try:
+            func = globals_table[func_name]
+        except Exception:
+            func = None
+
+        if func is None:
+            return None
+        return func(*args)
 
     def update_entity(self, entity_id, entity_data):
         return self.call_function("on_update", entity_id, entity_data)
