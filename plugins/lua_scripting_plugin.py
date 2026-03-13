@@ -1,3 +1,9 @@
+"""Lua scripting plugin for NeoPyxel Studio.
+
+Provides a dockable editor to execute Lua snippets and run on_update hooks
+against the currently selected entity.
+"""
+
 import os
 
 from PyQt5.QtCore import Qt
@@ -15,6 +21,16 @@ from PyQt5.QtWidgets import (
 from engine.scripting.lua_bridge import LuaBridge
 
 
+EXAMPLE_SCRIPT = """-- Example:
+function on_update(entity_id, entity)
+  if entity ~= nil then
+    entity.x = entity.x + 1
+  end
+  return entity
+end
+"""
+
+
 class LuaScriptingDock(QDockWidget):
     def __init__(self, app):
         super().__init__("Lua Scripting", app)
@@ -30,14 +46,7 @@ class LuaScriptingDock(QDockWidget):
 
         layout.addWidget(QLabel("Lua Script"))
         self.editor = QTextEdit()
-        self.editor.setPlaceholderText(
-            """-- Example:\n"
-            "function on_update(entity_id, entity)\n"
-            "  if entity ~= nil then\n"
-            "    entity.x = entity.x + 1\n"
-            "  end\n"
-            "end\n"""
-        )
+        self.editor.setPlaceholderText(EXAMPLE_SCRIPT)
         layout.addWidget(self.editor)
 
         button_row = QHBoxLayout()
@@ -63,70 +72,32 @@ class LuaScriptingDock(QDockWidget):
 
         self.setWidget(container)
 
-    def _set_status(self, message):
-        self.status_label.setText(message)
-        try:
-            self.app.set_status(f"[Lua Plugin] {message}")
-        except Exception:
-            pass
-
-    def load_script_file(self):
-        path, _ = QFileDialog.getOpenFileName(
-            self,
-            "Open Lua script",
-            self.app.current_project_dir or os.getcwd(),
-            "Lua files (*.lua);;All files (*.*)",
-        )
-        if not path:
-            return
-        with open(path, "r", encoding="utf-8") as file:
-            script = file.read()
-        self.script_path = path
-        self.editor.setPlainText(script)
-        self._set_status(f"Loaded: {os.path.basename(path)}")
-
-    def execute_editor_script(self):
-        if not self.lua.is_available():
-            self._set_status(self.lua.get_status_message())
-            return
-
-        code = self.editor.toPlainText().strip()
-        if not code:
-            self._set_status("No script to execute")
-            return
-        try:
-            self.lua.execute_script(code)
-            self._set_status("Script executed")
-        except Exception as exc:
-            self._set_status(f"Script error: {exc}")
-
-    def run_on_selected_entity(self):
-        if not self.lua.is_available():
-            self._set_status(self.lua.get_status_message())
-            return
-
-        entity = getattr(self.app.engine_widget, "selected_entity", None)
-        if entity is None:
-            self._set_status("No selected entity")
-            return
-
-        payload = {
-            "x": entity.rect.x,
-            "y": entity.rect.y,
-            "w": entity.rect.w,
-            "h": entity.rect.h,
-            "color": list(getattr(entity, "color", (0, 255, 0))),
-        }
-        entity_id = id(entity)
-
-        try:
-            result = self.lua.update_entity(entity_id, payload)
-        except Exception as exc:
-            self._set_status(f"on_update failed: {exc}")
-            return
-
+@@ -134,29 +137,28 @@ class LuaScriptingDock(QDockWidget):
         if isinstance(result, dict):
             if "x" in result:
                 entity.rect.x = int(result["x"])
             if "y" in result:
                 entity.rect.y = int(result["y"])
+            if "w" in result:
+                entity.rect.w = int(result["w"])
+            if "h" in result:
+                entity.rect.h = int(result["h"])
+            if "color" in result and isinstance(result["color"], (list, tuple)):
+                color = tuple(int(c) for c in result["color"][:3])
+                entity.color = color
+                entity.image.fill(color)
+
+        if hasattr(self.app.engine_widget, "notify_world_changed"):
+            self.app.engine_widget.notify_world_changed()
+
+        self._set_status("on_update executed")
+
+
+class LuaScriptingPlugin:
+    def __init__(self, app):
+        self.dock = LuaScriptingDock(app)
+
+
+def register(app):
+    plugin = LuaScriptingPlugin(app)
+    return plugin.dock
