@@ -27,3 +27,8 @@ function on_update(entity_id, entity)
   return entity
 end
 ```
+
+
+### Build Notes (PyInstaller)
+- This repo includes `hook-numpy.py` and `hook-lupa.py` for packaging binary/runtime files.
+- Keep `--additional-hooks-dir .` in the build command so PyInstaller picks up both hooks.
